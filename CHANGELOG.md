@@ -7,97 +7,63 @@ Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## [0.3.0](2026-08-19)
 
-### Layout
-
-#### Bug Fixes
-
-- revert layout adjustments commit f8398b7
-
-
-### Merge
-
-#### Chores
-
-- merge remote-tracking branch origin/main
-
-
-### Wordmark
-
-#### Bug Fixes
-
-- fixes wordmark.png
-
-
-### Release
-
-#### Chores
-
-- v0.2.0
-
-
-### README
-
-#### Documentation
-
-- updates README.md
-
-
-### CHANGELOG
-
-#### Documentation
-
-- adds CHANGELOG.md
-
-
-### Logo
+### Memory
 
 #### Features
 
-- adds logo.png
+- **core:** add persistent project memory module (`.cortex/memory.json`)
+- **core:** auto-detect category from text (decision, convention, pattern, mistake, task, note)
+- **core:** extract semantic tags from memory entries
+- **core:** search memory by text relevance with weighted scoring
+- **core:** list, show, delete memory entries
+- **cli:** add `cortex remember <text>` command with `--category` and `--context` flags
+- **cli:** add `cortex memory` command group (search, list, show, delete)
 
-
-### Node_modules
+### Context Engine
 
 #### Features
 
-- adds --minify, bundle, splitting, ping, Infinity, 0, optionName, color, local, verbose, 1, outFile, out, watch, build, file, level, traceToConsole, logToFile, serverMode, locale, logFile, logVerbosity, eventPort, disableAutomaticTypingAcquisition, useNodeIpc, traceDirectory, cancellationPipeName, globalPlugins, pluginProbeLocations, allowLocalPluginLoads, useSingleInferredProject, useInferredProjectPerProjectRoot, suppressDiagnosticEvents, noGetErrOnBackgroundUpdate, canUseWatchEvents, prof, legacy, help, expandHelp flag and adds foo, constructor, __require function
+- **core:** replace regex parser with tree-sitter AST for accurate symbol extraction
+- **core:** add tree-sitter-typescript and tree-sitter-javascript as native bindings
+- **core:** extract function signatures from AST
+- **core:** detect endLine for symbols from AST nodes
+- **core:** add semantic search module with multi-factor weighted scoring (path, symbol, import, export, structural)
+- **core:** add bidirectional dependency graph with reverse adjacency map
+- **core:** add cycle detection via DFS with stack tracking
+- **core:** add transitive dependency resolution with configurable depth
+- **core:** add impact scoring based on dependents count
+- **core:** add critical path computation from entry points
+- **core:** add `analyzeDependencies()` returning full analysis report
+- **core:** add `buildContext()` for enriched context results with impact scores
+- **cli:** add `--verbose` flag to `cortex search` for score breakdown
+- **cli:** add `--limit` flag to `cortex search`
+- **cli:** add `--depth` flag to `cortex context` for transitive dep depth
+- **cli:** show dependency health in `cortex analyze` (cycles, critical path)
+- **cli:** show impact scores in `cortex context`
 
+### Types
+
+#### Features
+
+- add `signature` field to `Symbol` interface
+- add `endLine` field to `Symbol` interface
+- add `SearchResult.breakdown` with per-factor scores
+- add `ContextResult` type with dependencies, dependents, transitive deps, impact score
+- add `DependencyAnalysis` type with cycles, transitive deps, impact scores, critical path
+- add `SemanticQuery` type for weighted search configuration
+- add `MemoryEntry`, `MemoryCategory`, `MemoryStore` types
 
 ### General
 
-#### Bug Fixes
-
-- progresso atual antes do revert
-
 #### Refactoring
 
-- adjusts layout
-- adjusts layout
+- bump version to 0.3.0 across all packages
+- update README with v0.2 completed features and v0.3 memory commands
+- update architecture diagram with search and memory modules
+- update tech stack table (tree-sitter replaces regex)
+- update project structure with memory and search directories
+- update data model documentation with memory schema
 
-#### Chores
-
-- cleanup repo — add .gitignore, remove node_modules/dist/.cortex from tracking, fix CHANGELOG, update README
-
-
-### Contributors
-
-Thank you to 1 community contributor:
-
-@benogoulart
-- chore(release): v0.2.0
-- refactor: adjusts layout
-- docs(README): updates README.md
-- docs(CHANGELOG): adds CHANGELOG.md
-- feat(logo): adds logo.png
-- feat(node_modules): adds --minify, bundle, splitting, ping, Infinity, 0, optionName, color, local, verbose, 1, outFile, out, watch, build, file, level, traceToConsole, logToFile, serverMode, locale, logFile, logVerbosity, eventPort, disableAutomaticTypingAcquisition, useNodeIpc, traceDirectory, cancellationPipeName, globalPlugins, pluginProbeLocations, allowLocalPluginLoads, useSingleInferredProject, useInferredProjectPerProjectRoot, suppressDiagnosticEvents, noGetErrOnBackgroundUpdate, canUseWatchEvents, prof, legacy, help, expandHelp flag and adds foo, constructor, __require function
-- chore: cleanup repo — add .gitignore, remove node_modules/dist/.cortex from tracking, fix CHANGELOG, update README
-- fix(layout): revert layout adjustments commit f8398b7
-- chore(merge): merge remote-tracking branch origin/main
-- fix: progresso atual antes do revert
-- refactor: adjusts layout
-- fix(wordmark): fixes wordmark.png
-
-**Contributors:** @benogoulart
 
 ## [0.2.0](2026-08-18)
 
