@@ -104,3 +104,25 @@ export interface SemanticQuery {
     structural: number;
   };
 }
+
+export type MemoryCategory =
+  | "decision"
+  | "convention"
+  | "pattern"
+  | "mistake"
+  | "task"
+  | "note";
+
+export interface MemoryEntry {
+  id: string;
+  text: string;
+  category: MemoryCategory;
+  tags: string[];
+  createdAt: string;
+  context: string[];
+}
+
+export interface MemoryStore {
+  version: string;
+  entries: MemoryEntry[];
+}
