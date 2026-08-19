@@ -1,5 +1,5 @@
 import type { Command } from "commander";
-import { loadIndex, findEntryPoints, buildGraph } from "@cortex/core";
+import { loadIndex, findEntryPoints, buildGraph, analyzeDependencies } from "@cortex/core";
 import { resolve } from "node:path";
 
 export function analyzeCommand(program: Command): void {
@@ -20,12 +20,14 @@ export function analyzeCommand(program: Command): void {
       const stats = index.project.stats;
       const graph = buildGraph(files);
       const entryPoints = findEntryPoints(graph);
+      const analysis = analyzeDependencies(graph);
 
       console.log("\n  PROJECT ANALYSIS");
       console.log("  " + "─".repeat(40));
 
       console.log(`\n  Name:       ${index.project.name}`);
       console.log(`  Analyzed:   ${new Date(index.project.analyzedAt).toLocaleString()}`);
+      console.log(`  Version:    ${index.version}`);
 
       console.log("\n  STATS");
       console.log("  " + "─".repeat(40));
@@ -63,6 +65,24 @@ export function analyzeCommand(program: Command): void {
         }
         if (entryPoints.length > 5) {
           console.log(`  ... and ${entryPoints.length - 5} more`);
+        }
+      }
+
+      console.log("\n  DEPENDENCY HEALTH");
+      console.log("  " + "─".repeat(40));
+      console.log(`  Total edges:     ${index.graph.edges.length}`);
+      console.log(`  Cycles:          ${analysis.cycles.length}`);
+
+      if (analysis.cycles.length > 0) {
+        for (const cycle of analysis.cycles.slice(0, 3)) {
+          console.log(`    ⚠ ${cycle.join(" → ")}`);
+        }
+      }
+
+      if (analysis.criticalPath.length > 0) {
+        console.log(`  Critical path:   ${analysis.criticalPath.length} files`);
+        for (const cp of analysis.criticalPath.slice(0, 3)) {
+          console.log(`    → ${cp}`);
         }
       }
 
