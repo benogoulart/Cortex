@@ -150,6 +150,61 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
     PostgreSQL with Prisma as ORM
 ```
 
+```
+❯ cortex plan "add payment system"
+
+  Add Payment System
+  ────────────────────────────────────────
+  Plan for: add payment system. 3 module(s) affected (1 high-impact).
+  Risk: H HIGH
+  Complexity: 42/100
+  Tasks: 14
+
+  Risk factors:
+    - 1 high-impact module(s) affected
+    - Wide scope: 3 modules affected
+
+  Affected modules:
+    src/billing [high]
+      Contains relevant symbols: BillingService, createInvoice
+      symbols: BillingService, createInvoice
+    src/api [medium]
+      Imports relevant modules: ./billing
+    src/models [low]
+      Contains relevant symbols: Invoice
+
+  ? DISCOVERY
+  ────────────────────────────────────────
+    [ ] !! Understand current state of src/billing
+        files: src/billing
+    [ ] ! Understand current state of src/api
+        files: src/api
+    [ ] ! Review existing patterns for: BillingService, createInvoice, Invoice
+
+  A ARCHITECTURE
+  ────────────────────────────────────────
+    [ ] !! Define module boundaries and interfaces
+        files: src/billing
+    [ ] ! Define data flow and dependencies
+        files: src/billing, src/api, src/models
+    [ ] ! Design API contracts and service boundaries
+
+  I IMPLEMENTATION
+  ────────────────────────────────────────
+    [ ] ! Implement BillingService in src/billing
+        files: src/billing
+    [ ] . Implement createInvoice in src/billing
+        files: src/billing
+
+  T TESTING
+  ────────────────────────────────────────
+    [ ] !! Add tests for src/billing
+        files: src/billing
+    [ ] ! Add integration tests for cross-module interactions
+        files: src/billing, src/api, src/models
+    [ ] !!! Verify existing tests still pass
+```
+
 ## Features
 
 | Feature | Description |
@@ -163,6 +218,7 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 | **Context engine** | Get all relevant files, symbols, dependency chains and impact scores for a topic |
 | **Dependency analysis** | Cycle detection, transitive deps, critical path, impact scoring |
 | **Project memory** | Persistent decisions, conventions, patterns and mistakes per project |
+| **Task planner** | Transform vague tasks into structured execution plans with risk assessment |
 | **Multi-language** | TypeScript, JavaScript (ESM + CJS), JSON — extensible to more |
 | **Fast** | Indexes thousands of files in seconds with tree-sitter |
 | **Zero config** | Works out of the box — just `cortex init` in any project |
@@ -191,6 +247,7 @@ cortex search "auth"     # find relevant code
 cortex context "payment" # get full context for a topic
 cortex remember "use repository pattern"  # save a convention
 cortex memory search "pattern"            # recall knowledge
+cortex plan "add payment system"          # generate execution plan
 ```
 
 ## Commands
@@ -207,6 +264,7 @@ cortex memory search "pattern"            # recall knowledge
 | `cortex memory search <query>` | Search through project memory |
 | `cortex memory show <id>` | Show a specific memory entry |
 | `cortex memory delete <id>` | Delete a memory entry |
+| `cortex plan <description>` | Generate a structured execution plan from a task description |
 
 ### Options
 
@@ -393,6 +451,7 @@ cortex/
 │   │       ├── graph/            # Dependency graph with cycle detection
 │   │       ├── search/           # Semantic search with weighted scoring
 │   │       ├── memory/           # Persistent project knowledge
+│   │       ├── planner/          # Task planning and risk assessment
 │   │       └── index.ts          # Public API
 │   │
 │   └── cli/                      # CLI interface
@@ -404,7 +463,8 @@ cortex/
 │           │   ├── search.ts     # cortex search
 │           │   ├── context.ts    # cortex context
 │           │   ├── remember.ts   # cortex remember
-│           │   └── memory.ts     # cortex memory
+│           │   ├── memory.ts     # cortex memory
+│           │   └── plan.ts       # cortex plan
 │           └── index.ts          # CLI entry point (commander)
 │
 ├── .gitignore

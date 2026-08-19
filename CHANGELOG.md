@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 
+## [0.4.0](2026-08-19)
+
+### Task Planner
+
+#### Features
+
+- **core:** add task planner module for generating structured execution plans
+- **core:** analyze codebase to identify affected modules from task description
+- **core:** risk assessment based on module impact, scope, circular deps, file size
+- **core:** generate phased execution plan (discovery, architecture, implementation, testing, security)
+- **core:** auto-detect security-relevant tasks from keywords
+- **core:** compute complexity score (0-100) from affected modules, task count, risk level
+- **core:** identify affected modules with reasons and risk levels
+- **cli:** add `cortex plan <description>` command
+- **cli:** display plan with risk factors, affected modules, phased tasks, priorities
+
+### Types
+
+#### Features
+
+- add `ExecutionPlan`, `PlanTask`, `PlanPhase`, `AffectedModule`, `TaskPriority` types
+
+### General
+
+#### Refactoring
+
+- bump version to 0.4.0 across all packages
+- update README with plan command preview and examples
+- update project structure with planner module
+- update features table with task planner
+
+
 ## [0.3.0](2026-08-19)
 
 ### Memory
