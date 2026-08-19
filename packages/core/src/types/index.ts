@@ -17,6 +17,7 @@ export interface Symbol {
   line: number;
   endLine?: number;
   exported: boolean;
+  signature?: string;
 }
 
 export interface FileEntry {
@@ -67,4 +68,61 @@ export interface SearchResult {
   file: string;
   relevance: number;
   matchedSymbols: Symbol[];
+  breakdown: {
+    pathScore: number;
+    symbolScore: number;
+    importScore: number;
+    exportScore: number;
+    structuralScore: number;
+  };
+}
+
+export interface ContextResult {
+  file: string;
+  relevance: number;
+  matchedSymbols: Symbol[];
+  dependencies: string[];
+  dependents: string[];
+  transitiveDependencies: string[];
+  impactScore: number;
+}
+
+export interface DependencyAnalysis {
+  cycles: string[][];
+  transitiveDeps: Map<string, string[]>;
+  impactScores: Map<string, number>;
+  criticalPath: string[];
+}
+
+export interface SemanticQuery {
+  terms: string[];
+  weights: {
+    path: number;
+    symbol: number;
+    import: number;
+    export: number;
+    structural: number;
+  };
+}
+
+export type MemoryCategory =
+  | "decision"
+  | "convention"
+  | "pattern"
+  | "mistake"
+  | "task"
+  | "note";
+
+export interface MemoryEntry {
+  id: string;
+  text: string;
+  category: MemoryCategory;
+  tags: string[];
+  createdAt: string;
+  context: string[];
+}
+
+export interface MemoryStore {
+  version: string;
+  entries: MemoryEntry[];
 }
