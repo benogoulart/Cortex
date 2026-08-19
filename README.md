@@ -142,7 +142,7 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 
 ```bash
 # Clone and link globally
-git clone https://github.com/youruser/cortex.git
+git clone https://github.com/benogoulart/Cortex.git
 cd cortex
 pnpm install
 pnpm build
@@ -308,10 +308,14 @@ cortex/
 │           │   └── context.ts    # cortex context
 │           └── index.ts          # CLI entry point (commander)
 │
+├── .gitignore
 ├── package.json                  # Monorepo root
 ├── pnpm-workspace.yaml           # Workspace config
 ├── tsconfig.json                 # Shared TypeScript config
 ├── vitest.config.ts              # Test config
+├── CHANGELOG.md                  # Auto-generated changelog
+├── logo.png                      # Project logo
+├── wordmark.png                  # Wordmark
 └── README.md
 ```
 
