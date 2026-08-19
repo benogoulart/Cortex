@@ -2,7 +2,7 @@
 
 <img src="logo.png" alt="Cortex" width="250">
 <br>
-<img src="wordmark_cortex_3A3A3A.png" alt="Cortex" width="250">
+<img src="wordmark.png" alt="Cortex" width="250">
 
 **Developer intelligence for your codebase.**
 Scans, indexes and understands your project — so coding agents like OpenCode get the right context every time.
