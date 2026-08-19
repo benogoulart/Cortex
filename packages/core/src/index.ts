@@ -1,10 +1,11 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore } from "./types/index.js";
+import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore, ExecutionPlan, PlanTask, PlanPhase, AffectedModule, TaskPriority } from "./types/index.js";
 import { scanFiles } from "./indexer/index.js";
 import { getParser } from "./parser/index.js";
 import { buildGraph, findEntryPoints, analyzeDependencies, buildContext } from "./graph/index.js";
 import { parseQuery, semanticSearch, buildSemanticIndex } from "./search/index.js";
+import { generatePlan } from "./planner/index.js";
 
 export const CORTEX_DIR = ".cortex";
 export const INDEX_FILE = "index.json";
@@ -32,7 +33,7 @@ export async function initIndex(options: InitOptions): Promise<ProjectIndex> {
   const projectName = root.split("/").pop() ?? root.split("\\").pop() ?? "unknown";
 
   const index: ProjectIndex = {
-    version: "0.3.0",
+    version: "0.4.0",
     project: {
       name: projectName,
       root,
@@ -136,6 +137,7 @@ export {
 } from "./graph/index.js";
 export { extractSymbols } from "./symbols/index.js";
 export { parseQuery, semanticSearch, buildSemanticIndex } from "./search/index.js";
+export { generatePlan } from "./planner/index.js";
 export {
   loadMemory,
   saveMemory,
@@ -165,4 +167,9 @@ export type {
   MemoryEntry,
   MemoryCategory,
   MemoryStore,
+  ExecutionPlan,
+  PlanTask,
+  PlanPhase,
+  AffectedModule,
+  TaskPriority,
 } from "./types/index.js";

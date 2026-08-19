@@ -126,3 +126,48 @@ export interface MemoryStore {
   version: string;
   entries: MemoryEntry[];
 }
+
+export type PlanPhase =
+  | "discovery"
+  | "architecture"
+  | "implementation"
+  | "testing"
+  | "security"
+  | "deployment";
+
+export type TaskPriority = "critical" | "high" | "medium" | "low";
+
+export interface PlanTask {
+  id: string;
+  description: string;
+  phase: PlanPhase;
+  priority: TaskPriority;
+  affectedFiles: string[];
+  dependsOn: string[];
+  completed: boolean;
+}
+
+export interface AffectedModule {
+  path: string;
+  reason: string;
+  risk: "low" | "medium" | "high";
+  symbols: string[];
+}
+
+export interface ExecutionPlan {
+  id: string;
+  title: string;
+  description: string;
+  taskDescription: string;
+  createdAt: string;
+  risk: "low" | "medium" | "high" | "critical";
+  riskFactors: string[];
+  affectedModules: AffectedModule[];
+  phases: {
+    phase: PlanPhase;
+    label: string;
+    tasks: PlanTask[];
+  }[];
+  totalTasks: number;
+  estimatedComplexity: number;
+}
