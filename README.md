@@ -1,8 +1,8 @@
 <div align="center">
 
 <img src="logo.png" alt="Cortex" width="250">
-
-# cortex
+<br>
+<img src="wordmark.png" alt="Cortex" width="250">
 
 **Developer intelligence for your codebase.**
 Scans, indexes and understands your project — so coding agents like OpenCode get the right context every time.
