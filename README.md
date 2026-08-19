@@ -55,6 +55,7 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 
   Name:       my-project
   Analyzed:   18/08/2026, 22:00:00
+  Version:    0.2.0
 
   STATS
   ────────────────────────────────────────
@@ -72,6 +73,12 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
   scripts               8 ██
   docs                  6 █
   ...
+
+  DEPENDENCY HEALTH
+  ────────────────────────────────────────
+  Total edges:     156
+  Cycles:          0
+  Critical path:   12 files
 ```
 
 ```
@@ -101,24 +108,46 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 
   Relevant files:
 
-  → src/auth/AuthService.ts
+  → src/auth/AuthService.ts (relevance: 38, impact: 12)
     ✦ class      AuthService
     ✦ function   validate
     ✦ function   refreshToken
+    Dependencies: src/auth/UserRepository.ts
+    Dependents: src/api/routes.ts, src/app/page.tsx
+    Transitive deps: 5 total
 
-  → src/auth/AuthController.ts
+  → src/auth/AuthController.ts (relevance: 25, impact: 8)
     ✦ function   login
     ✦ function   callback
 
-  → src/middleware/auth.ts
+  → src/middleware/auth.ts (relevance: 18, impact: 3)
     ✦ function   authenticate
+```
 
-  Dependencies (this file imports):
-    ← src/auth/UserRepository.ts
+```
+❯ cortex remember "Controllers must never access repositories directly"
 
-  Dependents (files that import this):
-    → src/api/routes.ts
-    → src/app/page.tsx
+  Memory saved
+  ────────────────────────────────────────
+  Category:   convention
+  ID:         mem_1a2b3c
+  Created:    19/08/2026, 15:30:00
+```
+
+```
+❯ cortex memory search "database"
+
+  MEMORY: "database"
+  ────────────────────────────────────────
+
+  [convention] mem_1a2b3c — 19/08/2026
+    Controllers must never access repositories directly
+
+  [pattern] mem_4d5e6f — 18/08/2026
+    Use Repository pattern for all database access
+
+  [decision] mem_7g8h9i — 17/08/2026
+    PostgreSQL with Prisma as ORM
 ```
 
 ## Features
@@ -126,13 +155,16 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 | Feature | Description |
 |---|---|
 | **Codebase indexing** | Scans your project and builds a structured index of files, symbols and dependencies |
+| **Tree-sitter AST** | Proper AST parsing for accurate symbol extraction (classes, functions, types, enums) |
 | **Symbol extraction** | Detects classes, functions, interfaces, types, enums, constants — exported and private |
-| **Dependency graph** | Maps which files import what, builds a full dependency graph |
+| **Dependency graph** | Maps which files import what, with cycle detection and impact scoring |
 | **Architecture analysis** | Shows directory structure, entry points and project composition |
-| **Semantic search** | Find files and symbols by relevance, not just filename |
-| **Context engine** | Get all relevant files, symbols and dependency chains for a topic |
+| **Semantic search** | Multi-factor weighted scoring: path, symbol, import, export, structural relevance |
+| **Context engine** | Get all relevant files, symbols, dependency chains and impact scores for a topic |
+| **Dependency analysis** | Cycle detection, transitive deps, critical path, impact scoring |
+| **Project memory** | Persistent decisions, conventions, patterns and mistakes per project |
 | **Multi-language** | TypeScript, JavaScript (ESM + CJS), JSON — extensible to more |
-| **Fast** | Indexes thousands of files in seconds, no AST overhead |
+| **Fast** | Indexes thousands of files in seconds with tree-sitter |
 | **Zero config** | Works out of the box — just `cortex init` in any project |
 | **Agent-ready** | Structured output designed for MCP integration with OpenCode |
 
@@ -153,10 +185,12 @@ pnpm link --global
 
 ```bash
 cd my-project
-cortex init          # scan and create .cortex/index.json
-cortex analyze       # see project insights
-cortex search "auth" # find relevant code
+cortex init              # scan and create .cortex/index.json
+cortex analyze           # see project insights
+cortex search "auth"     # find relevant code
 cortex context "payment" # get full context for a topic
+cortex remember "use repository pattern"  # save a convention
+cortex memory search "pattern"            # recall knowledge
 ```
 
 ## Commands
@@ -164,10 +198,15 @@ cortex context "payment" # get full context for a topic
 | Command | Description |
 |---|---|
 | `cortex init` | Scan codebase and create the index at `.cortex/index.json` |
-| `cortex analyze` | Show project stats, architecture, entry points and top symbols |
+| `cortex analyze` | Show project stats, architecture, dependency health and top symbols |
 | `cortex status` | Show index metadata (version, last analysis, file count) |
-| `cortex search <query>` | Search files and symbols by relevance score |
-| `cortex context <topic>` | Get all relevant files, symbols and dependency chains for a topic |
+| `cortex search <query>` | Search files and symbols by semantic relevance score |
+| `cortex context <topic>` | Get all relevant files, symbols, dependency chains and impact scores |
+| `cortex remember <text>` | Save a decision, convention, pattern or mistake to project memory |
+| `cortex memory` | List all memory entries |
+| `cortex memory search <query>` | Search through project memory |
+| `cortex memory show <id>` | Show a specific memory entry |
+| `cortex memory delete <id>` | Delete a memory entry |
 
 ### Options
 
@@ -176,6 +215,21 @@ cortex context "payment" # get full context for a topic
 | `-r, --root <path>` | Project root directory | `process.cwd()` |
 | `-i, --include <patterns>` | File glob patterns to include | `**/*` |
 | `--ignore <patterns>` | Additional patterns to ignore | — |
+| `-n, --limit <number>` | Max results for search | `15` |
+| `--verbose` | Show score breakdown (search) | — |
+| `-d, --depth <number>` | Transitive dependency depth (context) | `3` |
+| `-c, --category <type>` | Memory category (remember) | auto-detect |
+
+### Memory Categories
+
+| Category | Description |
+|---|---|
+| `decision` | Architectural or technical decisions made in the project |
+| `convention` | Coding conventions and style rules |
+| `pattern` | Reusable patterns and idioms used |
+| `mistake` | Known pitfalls and things to avoid |
+| `task` | Pending or tracked tasks |
+| `note` | General notes about the project |
 
 ### Examples
 
@@ -189,8 +243,21 @@ cortex search "useEffect"
 # Get context before starting work
 cortex context "database migration"
 
-# Check when the index was last updated
-cortex status
+# Save important decisions
+cortex remember -c decision "Use PostgreSQL with Prisma ORM"
+
+# Save conventions
+cortex remember "All API responses must follow { data, error } format"
+
+# Save patterns
+cortex remember -c pattern "Use repository pattern for database access"
+
+# Save things to avoid
+cortex remember -c mistake "Never use setTimeout for debouncing — use lodash.debounce"
+
+# Recall knowledge
+cortex memory search "database"
+cortex memory search "convention"
 ```
 
 ## Architecture
@@ -201,36 +268,46 @@ graph TD
 
     subgraph Core["@cortex/core"]
         Indexer["indexer — file discovery"]
-        Parser["parser — AST extraction"]
+        Parser["parser — tree-sitter AST"]
         Symbols["symbols — code intelligence"]
         Graph["graph — dependency mapping"]
+        Search["search — semantic scoring"]
+        Memory["memory — project knowledge"]
     end
 
     Indexer --> |fast-glob| Files[("Codebase")]
-    Parser --> |regex / tree-sitter| AST["AST nodes"]
+    Parser --> |tree-sitter| AST["AST nodes"]
     AST --> Symbols
     Files --> Symbols
     Symbols --> Index[(".cortex/index.json")]
     Files --> Graph
     Graph --> Index
+    Search --> |weighted scoring| Results["Search Results"]
+    Memory --> |persistent| MemoryStore[(".cortex/memory.json")]
 
     CLI --> |init| Indexer
     CLI --> |analyze| Index
-    CLI --> |search| Index
-    CLI --> |context| Index
+    CLI --> |search| Search
+    CLI --> |context| Graph
+    CLI --> |remember| Memory
+    CLI --> |memory| Memory
 
     OpenCode["OpenCode Agent"] --> |MCP future| CLI
 ```
 
 **How it works:**
 
-1. **`cortex init`** walks your project with `fast-glob`, reads every source file, extracts symbols with regex-based parsing, builds a dependency graph from imports, and writes everything to `.cortex/index.json`.
+1. **`cortex init`** walks your project with `fast-glob`, reads every source file, parses symbols with tree-sitter AST, builds a dependency graph from imports, and writes everything to `.cortex/index.json`.
 
-2. **`cortex analyze`** reads the index and produces a dashboard: file counts, language breakdown, directory architecture, entry points and the most important symbols.
+2. **`cortex analyze`** reads the index and produces a dashboard: file counts, language breakdown, directory architecture, entry points, dependency health (cycles, critical path) and the most important symbols.
 
-3. **`cortex search`** scores every file and symbol against your query using path matching, symbol name matching and import relevance — ranked by a weighted scoring function.
+3. **`cortex search`** scores every file and symbol against your query using multi-factor weighted scoring: path relevance, symbol name matching, import context, export prominence, and structural importance.
 
-4. **`cortex context`** goes deeper: it finds relevant files, resolves their dependency graph (what they import, what imports them), and returns a complete picture of the code area.
+4. **`cortex context`** goes deeper: it finds relevant files, resolves their full dependency graph (direct, transitive, dependents), computes impact scores, and returns a complete picture of the code area with cycle warnings.
+
+5. **`cortex remember`** saves project knowledge (decisions, conventions, patterns, mistakes) to `.cortex/memory.json`. Auto-detects category from text or accepts `--category` flag.
+
+6. **`cortex memory`** searches and retrieves stored knowledge, enabling agents to recall project context across sessions.
 
 ### Data model
 
@@ -238,11 +315,11 @@ The index stores everything in a single JSON file:
 
 ```json
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "project": {
     "name": "my-project",
     "root": "/path/to/project",
-    "analyzedAt": "2026-08-18T22:00:00.000Z",
+    "analyzedAt": "2026-08-19T15:00:00.000Z",
     "stats": {
       "totalFiles": 142,
       "totalLines": 18400,
@@ -256,8 +333,8 @@ The index stores everything in a single JSON file:
       "language": "typescript",
       "lines": 245,
       "symbols": [
-        { "name": "AuthService", "kind": "class", "line": 12, "exported": true },
-        { "name": "validate", "kind": "function", "line": 34, "exported": true }
+        { "name": "AuthService", "kind": "class", "line": 12, "endLine": 80, "exported": true, "signature": "class AuthService" },
+        { "name": "validate", "kind": "function", "line": 34, "endLine": 42, "exported": true, "signature": "async validate(token: string): Promise<boolean>" }
       ],
       "imports": ["./UserRepository", "../middleware/auth"],
       "exports": ["AuthService"]
@@ -268,6 +345,24 @@ The index stores everything in a single JSON file:
       { "from": "src/auth/AuthService.ts", "to": "src/auth/UserRepository.ts", "type": "import" }
     ]
   }
+}
+```
+
+Memory is stored separately:
+
+```json
+{
+  "version": "0.3.0",
+  "entries": [
+    {
+      "id": "mem_1a2b3c",
+      "text": "Controllers must never access repositories directly",
+      "category": "convention",
+      "tags": ["architecture", "controllers", "repositories"],
+      "createdAt": "2026-08-19T15:30:00.000Z",
+      "context": ["src/controllers/", "src/repositories/"]
+    }
+  ]
 }
 ```
 
@@ -282,7 +377,7 @@ The index stores everything in a single JSON file:
 | Build | tsup |
 | CLI framework | commander |
 | Testing | vitest |
-| Parsing | Regex-based (tree-sitter planned for v0.2) |
+| Parsing | tree-sitter (TypeScript, JavaScript) |
 
 ## Project Structure
 
@@ -293,10 +388,12 @@ cortex/
 │   │   └── src/
 │   │       ├── types/            # Shared TypeScript types
 │   │       ├── indexer/          # File discovery with fast-glob
-│   │       ├── parser/           # AST extraction (regex-based)
+│   │       ├── parser/           # AST extraction (tree-sitter + regex fallback)
 │   │       ├── symbols/          # Symbol detection (classes, functions, etc.)
-│   │       ├── graph/            # Dependency graph builder
-│   │       └── index.ts          # Public API — initIndex, loadIndex, etc.
+│   │       ├── graph/            # Dependency graph with cycle detection
+│   │       ├── search/           # Semantic search with weighted scoring
+│   │       ├── memory/           # Persistent project knowledge
+│   │       └── index.ts          # Public API
 │   │
 │   └── cli/                      # CLI interface
 │       └── src/
@@ -305,7 +402,9 @@ cortex/
 │           │   ├── analyze.ts    # cortex analyze
 │           │   ├── status.ts     # cortex status
 │           │   ├── search.ts     # cortex search
-│           │   └── context.ts    # cortex context
+│           │   ├── context.ts    # cortex context
+│           │   ├── remember.ts   # cortex remember
+│           │   └── memory.ts     # cortex memory
 │           └── index.ts          # CLI entry point (commander)
 │
 ├── .gitignore
@@ -351,6 +450,6 @@ pnpm lint         # type-check with tsc --noEmit
 
 <div align="center">
 
-**Built with** TypeScript · Node.js · pnpm · fast-glob · commander
+**Built with** TypeScript · Node.js · pnpm · tree-sitter · fast-glob · commander
 
 </div>

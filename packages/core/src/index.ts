@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis } from "./types/index.js";
+import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore } from "./types/index.js";
 import { scanFiles } from "./indexer/index.js";
 import { getParser } from "./parser/index.js";
 import { buildGraph, findEntryPoints, analyzeDependencies, buildContext } from "./graph/index.js";
@@ -32,7 +32,7 @@ export async function initIndex(options: InitOptions): Promise<ProjectIndex> {
   const projectName = root.split("/").pop() ?? root.split("\\").pop() ?? "unknown";
 
   const index: ProjectIndex = {
-    version: "0.2.0",
+    version: "0.3.0",
     project: {
       name: projectName,
       root,
@@ -136,6 +136,19 @@ export {
 } from "./graph/index.js";
 export { extractSymbols } from "./symbols/index.js";
 export { parseQuery, semanticSearch, buildSemanticIndex } from "./search/index.js";
+export {
+  loadMemory,
+  saveMemory,
+  addMemoryEntry,
+  deleteMemoryEntry,
+  getMemoryEntry,
+  searchMemory,
+  listMemory,
+  detectCategory,
+  extractTags,
+  MEMORY_FILE,
+  MEMORY_VERSION,
+} from "./memory/index.js";
 export type {
   ProjectIndex,
   FileEntry,
@@ -149,4 +162,7 @@ export type {
   ContextResult,
   DependencyAnalysis,
   SemanticQuery,
+  MemoryEntry,
+  MemoryCategory,
+  MemoryStore,
 } from "./types/index.js";
