@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name("cortex")
   .description("Developer intelligence for your codebase")
-  .version("0.1.0");
+  .version("0.2.0");
 
 initCommand(program);
 analyzeCommand(program);

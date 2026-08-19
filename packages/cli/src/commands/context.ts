@@ -1,12 +1,13 @@
 import type { Command } from "commander";
-import { loadIndex, buildGraph, findDependencies, findDependents } from "@cortex/core";
+import { loadIndex, getContext } from "@cortex/core";
 import { resolve } from "node:path";
 
 export function contextCommand(program: Command): void {
   program
     .command("context <topic>")
-    .description("Get relevant context for a topic")
+    .description("Get relevant context for a topic with dependency analysis")
     .option("-r, --root <path>", "Project root", process.cwd())
+    .option("-d, --depth <number>", "Transitive dependency depth", "3")
     .action((topic: string, opts) => {
       const root = resolve(opts.root);
       const index = loadIndex(root);
@@ -16,36 +17,10 @@ export function contextCommand(program: Command): void {
         process.exit(1);
       }
 
-      const lowerTopic = topic.toLowerCase();
-      const graph = buildGraph(index.files);
+      const depth = parseInt(opts.depth, 10);
+      const { results, analysis } = getContext(index, topic, depth);
 
-      const relevantFiles = index.files
-        .map((file) => {
-          let relevance = 0;
-
-          if (file.relativePath.toLowerCase().includes(lowerTopic)) {
-            relevance += 10;
-          }
-
-          const matchedSymbols = file.symbols.filter(
-            (sym) =>
-              sym.name.toLowerCase().includes(lowerTopic) ||
-              sym.kind.toLowerCase().includes(lowerTopic)
-          );
-          relevance += matchedSymbols.length * 5;
-
-          for (const imp of file.imports) {
-            if (imp.toLowerCase().includes(lowerTopic)) {
-              relevance += 3;
-            }
-          }
-
-          return { file, relevance, matchedSymbols };
-        })
-        .filter((r) => r.relevance > 0)
-        .sort((a, b) => b.relevance - a.relevance);
-
-      if (relevantFiles.length === 0) {
+      if (results.length === 0) {
         console.log(`\n  No context found for "${topic}"\n`);
         return;
       }
@@ -54,33 +29,34 @@ export function contextCommand(program: Command): void {
       console.log("  " + "─".repeat(40));
 
       console.log("\n  Relevant files:");
-      for (const { file, matchedSymbols } of relevantFiles.slice(0, 10)) {
-        console.log(`\n  → ${file.relativePath}`);
-        if (matchedSymbols.length > 0) {
-          for (const sym of matchedSymbols) {
+      for (const result of results.slice(0, 10)) {
+        console.log(`\n  → ${result.file} (relevance: ${result.relevance}, impact: ${result.impactScore})`);
+
+        if (result.matchedSymbols.length > 0) {
+          for (const sym of result.matchedSymbols) {
             const icon = sym.exported ? "✦" : "·";
             console.log(`    ${icon} ${sym.kind.padEnd(10)} ${sym.name}`);
           }
         }
-      }
 
-      const primaryFile = relevantFiles[0]?.file;
-      if (primaryFile) {
-        const deps = findDependencies(graph, primaryFile.relativePath);
-        const dependents = findDependents(graph, primaryFile.relativePath);
-
-        if (deps.length > 0) {
-          console.log("\n  Dependencies (this file imports):");
-          for (const dep of deps) {
-            console.log(`    ← ${dep}`);
-          }
+        if (result.dependencies.length > 0) {
+          console.log(`    Dependencies: ${result.dependencies.slice(0, 5).join(", ")}`);
         }
 
-        if (dependents.length > 0) {
-          console.log("\n  Dependents (files that import this):");
-          for (const dep of dependents) {
-            console.log(`    → ${dep}`);
-          }
+        if (result.dependents.length > 0) {
+          console.log(`    Dependents: ${result.dependents.slice(0, 5).join(", ")}`);
+        }
+
+        if (result.transitiveDependencies.length > 0) {
+          console.log(`    Transitive deps: ${result.transitiveDependencies.length} total`);
+        }
+      }
+
+      if (analysis.cycles.length > 0) {
+        console.log("\n  WARNING: Circular dependencies detected");
+        console.log("  " + "─".repeat(40));
+        for (const cycle of analysis.cycles.slice(0, 5)) {
+          console.log(`    ${cycle.join(" → ")}`);
         }
       }
 
