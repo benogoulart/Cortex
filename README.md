@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="logo.png" alt="Cortex" width="250">
+
 # cortex
 
 **Developer intelligence for your codebase.**
