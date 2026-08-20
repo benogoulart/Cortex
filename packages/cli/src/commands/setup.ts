@@ -23,6 +23,10 @@ function writeOpenCode(root: string): string {
     }
   }
 
+  if (!config.$schema) {
+    config.$schema = "https://opencode.ai/config.json";
+  }
+
   if (!config.mcp || typeof config.mcp !== "object") {
     config.mcp = {};
   }
