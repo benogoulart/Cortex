@@ -34,7 +34,7 @@ export async function initIndex(options: InitOptions): Promise<ProjectIndex> {
   const projectName = root.split("/").pop() ?? root.split("\\").pop() ?? "unknown";
 
   const index: ProjectIndex = {
-    version: "0.5.0",
+    version: "0.6.0",
     project: {
       name: projectName,
       root,

@@ -14,7 +14,7 @@ const program = new Command();
 program
   .name("cortex")
   .description("Developer intelligence for your codebase")
-  .version("0.5.0");
+  .version("0.6.0");
 
 initCommand(program);
 analyzeCommand(program);
