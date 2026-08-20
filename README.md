@@ -289,7 +289,7 @@ cortex remember "use repository pattern"  # save a convention
 cortex memory search "pattern"            # recall knowledge
 cortex plan "add payment system"          # generate execution plan
 cortex history reports   # view past report snapshots
-cortex setup            # configure MCP for OpenCode
+cortex setup            # configure MCP for OpenCode, Claude Code or Codex
 ```
 
 ## Commands
@@ -312,13 +312,14 @@ cortex setup            # configure MCP for OpenCode
 | `cortex report` | Run all agents and show unified report with cross-agent correlation |
 | `cortex history reports` | List past report snapshots |
 | `cortex history plans` | List saved execution plans |
-| `cortex setup` | Configure MCP server for OpenCode in this project |
+| `cortex setup` | Configure MCP server for OpenCode, Claude Code or Codex in this project |
 
 ### Options
 
 | Flag | Description | Default |
 |---|---|---|
 | `-r, --root <path>` | Project root directory | `process.cwd()` |
+| `-a, --agent <agents>` | Agent(s) to configure: opencode, claude, codex, all | `all` |
 | `-i, --include <patterns>` | File glob patterns to include | `**/*` |
 | `--ignore <patterns>` | Additional patterns to ignore | — |
 | `-n, --limit <number>` | Max results for search | `15` |
@@ -368,43 +369,63 @@ cortex memory search "database"
 cortex memory search "convention"
 ```
 
-## MCP Setup (OpenCode)
+## MCP Setup
 
-Cortex exposes 21 tools via MCP so coding agents can query your codebase automatically.
+Cortex exposes 21 tools via MCP so coding agents can query your codebase automatically. Supports **OpenCode**, **Claude Code**, and **Codex**.
 
 ### Quick setup
 
 ```bash
 cd my-project
-cortex setup    # creates opencode.json with cortex MCP server
+cortex setup                          # auto-detect agents, configure all
+cortex setup --agent opencode         # OpenCode only
+cortex setup --agent claude           # Claude Code only
+cortex setup --agent codex            # Codex only
+cortex setup --agent opencode,claude  # multiple agents
 ```
 
 ### Manual setup
 
-Create `opencode.json` in your project root:
+<details>
+<summary><b>OpenCode</b> — <code>opencode.json</code></summary>
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "cortex": {
+      "type": "local",
+      "command": ["cortex-mcp"]
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary><b>Claude Code</b> — <code>.mcp.json</code></summary>
 
 ```json
 {
   "mcpServers": {
     "cortex": {
-      "command": "cortex-mcp"
+      "command": "cortex-mcp",
+      "args": []
     }
   }
 }
 ```
+</details>
 
-Or point directly to the dist:
+<details>
+<summary><b>Codex</b> — <code>.codex/config.toml</code></summary>
 
-```json
-{
-  "mcpServers": {
-    "cortex": {
-      "command": "node",
-      "args": ["/path/to/cortex/packages/mcp/dist/index.js"]
-    }
-  }
-}
+```toml
+[mcp_servers.cortex]
+command = "cortex-mcp"
+args = []
 ```
+</details>
 
 ### Available MCP tools
 
@@ -644,16 +665,18 @@ cortex/
 
 ## Roadmap
 
-| Version | Milestone | What it adds |
+All milestones completed. Current version: **v1.0** — Complete Developer Intelligence Layer.
+
+| Version | Milestone | Status |
 |---|---|---|
-| **v0.1** | Foundation | Index, analyze, search, context — CLI working |
-| **v0.2** | Context Engine | Tree-sitter AST, semantic search, deeper dependency analysis |
-| **v0.3** | Memory | Persistent decisions, conventions and patterns per project |
-| **v0.4** | Task Planner | Transform vague tasks into structured execution plans |
-| **v0.5** | Code Review | `git diff` → architecture, security and test analysis |
-| **v0.6** | MCP Server | OpenCode consumes cortex directly via Model Context Protocol |
-| **v0.7** | Agents | Specialized agents: architect, reviewer, security, tester |
-| **v1.0** | Unified | Complete Developer Intelligence Layer |
+| ~~v0.1~~ | Foundation | Done |
+| ~~v0.2~~ | Context Engine | Done |
+| ~~v0.3~~ | Memory | Done |
+| ~~v0.4~~ | Task Planner | Done |
+| ~~v0.5~~ | Code Review | Done |
+| ~~v0.6~~ | MCP Server | Done |
+| ~~v0.7~~ | Agents | Done |
+| **v1.0** | **Unified** | **Current** |
 
 ## Contributing
 
