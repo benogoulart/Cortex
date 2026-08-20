@@ -52,7 +52,7 @@ serveStdio(() => {
       return json({
         message: "Index created successfully",
         files: index.files.length,
-        stats: index.stats,
+        stats: index.project.stats,
       });
     }
   );
@@ -73,7 +73,7 @@ serveStdio(() => {
       }
       return json({
         files: index.files.length,
-        stats: index.stats,
+        stats: index.project.stats,
         version: index.version,
       });
     }
@@ -148,7 +148,7 @@ serveStdio(() => {
       inputSchema: z.object({
         text: z.string().describe("Memory text to save"),
         root: z.string().optional().describe("Project root directory"),
-        category: z.enum(["decision", "bug", "feature", "config", "context", "note"]).optional().describe("Memory category"),
+        category: z.enum(["decision", "convention", "pattern", "mistake", "task", "note"]).optional().describe("Memory category"),
         contextFiles: z.array(z.string()).optional().describe("Related file paths"),
       }),
     },
@@ -182,7 +182,7 @@ serveStdio(() => {
       description: "List all project memories",
       inputSchema: z.object({
         root: z.string().optional().describe("Project root directory"),
-        category: z.enum(["decision", "bug", "feature", "config", "context", "note"]).optional().describe("Filter by category"),
+        category: z.enum(["decision", "convention", "pattern", "mistake", "task", "note"]).optional().describe("Filter by category"),
       }),
     },
     async ({ root, category }) => {

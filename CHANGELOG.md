@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 
+## [0.6.0](2026-08-19)
+
+### MCP Server
+
+#### Features
+
+- **mcp:** add new `@cortex/mcp` package with MCP server over stdio
+- **mcp:** expose 12 MCP tools: cortex_init, cortex_status, cortex_analyze, cortex_search, cortex_context, cortex_remember, cortex_memory_search, cortex_memory_list, cortex_memory_get, cortex_memory_delete, cortex_plan, cortex_review, cortex_dependencies
+- **mcp:** use `@modelcontextprotocol/server` v2 with `serveStdio` transport
+- **mcp:** input validation via zod/v4 schemas
+- **mcp:** all tools accept optional `root` parameter (defaults to cwd)
+- **mcp:** add shebang for direct execution (`#!/usr/bin/env node`)
+
+### Code Review
+
+#### Features
+
+- **core:** add review module — parse git diff, detect architecture violations, security issues, missing tests, complexity changes
+- **core:** detect hardcoded secrets, API keys, private keys, XSS vectors, SQL injection patterns
+- **core:** check for direct database access in controllers, eval() usage, child_process imports
+- **core:** flag new functions without corresponding tests
+- **core:** compute review score (0-100) based on findings severity and diff size
+- **cli:** add `cortex review` command with `--staged` and `--target` flags
+- **cli:** display findings grouped by severity (critical, warning, info) with category labels
+
+### Types
+
+#### Features
+
+- add `ReviewResult`, `ReviewFinding`, `ReviewSeverity`, `ReviewCategory`, `DiffSummary`, `DiffHunk` types
+
+### General
+
+#### Refactoring
+
+- bump version to 0.6.0 across all packages
+- merge v0.5 code review branch into main
+- add `zod` and `@modelcontextprotocol/server` dependencies to mcp package
+- update README architecture diagram with MCP server
+- update README project structure with mcp package and review module
+- update CHANGELOG with v0.5 and v0.6 entries
+
+
 ## [0.4.0](2026-08-19)
 
 ### Task Planner
