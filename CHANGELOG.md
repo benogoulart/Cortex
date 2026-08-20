@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 
+## [0.7.0](2026-08-20)
+
+### Agents
+
+#### Features
+
+- **core:** add `packages/core/src/agents/` module with 4 specialized analysis agents
+- **core:** architect agent — layer detection (presentation/api/service/data/infra), coupling metrics (instability, afferent/efferent), cycle analysis, architectural debt score
+- **core:** reviewer agent — enhanced code review with graph-aware caller impact analysis, convention checking from memory, cross-file analysis
+- **core:** security agent — full-file security scan (not just diff), entropy-based secret detection, OWASP Top 10 mapping, crypto weakness detection, auth/authz gap analysis
+- **core:** tester agent — test coverage mapping per file, untested critical path detection, test suggestions based on symbol analysis
+- **core:** add `runAgent()`, `runAllAgents()`, `listAgents()`, `getAgent()` orchestration API
+- **core:** add agent types: `AgentResult`, `AgentFinding`, `ArchitecturalReport`, `SecurityReport`, `TestReport`, `CouplingMetrics`, `OwaspGroup`, `FileCoverage`, `TestSuggestion`
+- **cli:** add `cortex agent <name>` command (architect, reviewer, security, tester, all)
+- **cli:** add `--json` flag for machine-readable output
+- **mcp:** add 5 MCP tools: `cortex_agent_architect`, `cortex_agent_reviewer`, `cortex_agent_security`, `cortex_agent_tester`, `cortex_agent_all`
+
+### Types
+
+#### Features
+
+- add `AgentName`, `AgentResult`, `AgentFinding`, `LayerInfo`, `LayerViolation`, `CouplingMetrics`, `ArchitecturalReport`
+- add `SecurityFinding`, `OwaspGroup`, `EndpointInfo`, `SecurityReport`
+- add `FileCoverage`, `TestSuggestion`, `TestReport`
+
+### General
+
+#### Refactoring
+
+- bump version to 0.7.0 across all packages
+- update README with agents feature and architecture
+
+
 ## [0.6.0](2026-08-19)
 
 ### MCP Server
