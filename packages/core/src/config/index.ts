@@ -36,6 +36,24 @@ export const DEFAULT_CONFIG: CortexConfig = {
   reviewRules: [],
 };
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+  const result = { ...target };
+  for (const key of Object.keys(source)) {
+    const sourceVal = source[key];
+    const targetVal = target[key];
+    if (isPlainObject(sourceVal) && isPlainObject(targetVal)) {
+      result[key] = deepMerge(targetVal, sourceVal);
+    } else if (sourceVal !== undefined) {
+      result[key] = sourceVal;
+    }
+  }
+  return result;
+}
+
 export function loadConfig(root: string): CortexConfig {
   const configPath = join(root, ".cortex", CONFIG_FILE);
   if (!existsSync(configPath)) {
@@ -43,7 +61,7 @@ export function loadConfig(root: string): CortexConfig {
   }
   try {
     const raw = JSON.parse(readFileSync(configPath, "utf-8"));
-    return { ...DEFAULT_CONFIG, ...raw };
+    return deepMerge(DEFAULT_CONFIG as unknown as Record<string, unknown>, raw) as unknown as CortexConfig;
   } catch {
     return { ...DEFAULT_CONFIG };
   }

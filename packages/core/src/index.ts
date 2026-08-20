@@ -22,7 +22,7 @@ export async function initIndex(options: InitOptions): Promise<ProjectIndex> {
   const { root, include, ignore } = options;
 
   const files = await scanFiles({ root, include, ignore });
-  const parser = getParser();
+  const parser = await getParser();
 
   for (const file of files) {
     const content = readFileSync(file.path, "utf-8");

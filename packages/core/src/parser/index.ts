@@ -8,9 +8,9 @@ export interface Parser {
 
 let parserInstance: Parser | null = null;
 
-export function getParser(): Parser {
+export async function getParser(): Promise<Parser> {
   if (!parserInstance) {
-    parserInstance = createTreeSitterParser();
+    parserInstance = await createTreeSitterParser();
   }
   return parserInstance;
 }
@@ -19,11 +19,12 @@ export function setParser(parser: Parser): void {
   parserInstance = parser;
 }
 
-function createTreeSitterParser(): Parser {
+async function createTreeSitterParser(): Promise<Parser> {
   try {
-    const TreeSitter = require("tree-sitter");
-    const TypeScriptLanguage = require("tree-sitter-typescript").typescript;
-    const JavaScriptLanguage = require("tree-sitter-javascript");
+    const TreeSitterModule = await import("tree-sitter");
+    const TreeSitter = TreeSitterModule.default;
+    const TypeScriptLanguage = (await import("tree-sitter-typescript")).typescript;
+    const JavaScriptLanguage = (await import("tree-sitter-javascript")).default;
 
     const tsParser = new TreeSitter();
     const jsParser = new TreeSitter();
