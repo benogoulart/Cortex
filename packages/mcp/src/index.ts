@@ -21,6 +21,9 @@ import {
   getDiff,
   getStagedDiff,
   reviewDiff,
+  runAgent,
+  runAllAgents,
+  loadMemory,
 } from "@cortex/core";
 
 function resolveRoot(root?: string): string {
@@ -36,7 +39,7 @@ function json(data: unknown) {
 }
 
 serveStdio(() => {
-  const server = new McpServer({ name: "cortex", version: "0.6.0" });
+  const server = new McpServer({ name: "cortex", version: "0.7.0" });
 
   server.registerTool(
     "cortex_init",
@@ -298,6 +301,105 @@ serveStdio(() => {
         transitiveDependencies: transitiveDeps,
         transitiveDependents: transitiveDependents,
       });
+    }
+  );
+
+  server.registerTool(
+    "cortex_agent_architect",
+    {
+      description: "Deep architectural analysis — layers, coupling metrics, fitness functions, debt score",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+      }),
+    },
+    async ({ root }) => {
+      const dir = resolveRoot(root);
+      const index = loadIndex(dir);
+      if (!index) return text("No index found. Run cortex_init first.");
+      const graph = buildGraph(index.files);
+      const analysis = analyzeDependencies(graph);
+      const memory = loadMemory(dir);
+      const result = runAgent("architect", { index, analysis, memory, root: dir });
+      return json(result);
+    }
+  );
+
+  server.registerTool(
+    "cortex_agent_reviewer",
+    {
+      description: "Enhanced review — graph-aware, convention-aware, cross-file analysis",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+      }),
+    },
+    async ({ root }) => {
+      const dir = resolveRoot(root);
+      const index = loadIndex(dir);
+      if (!index) return text("No index found. Run cortex_init first.");
+      const graph = buildGraph(index.files);
+      const analysis = analyzeDependencies(graph);
+      const memory = loadMemory(dir);
+      const result = runAgent("reviewer", { index, analysis, memory, root: dir });
+      return json(result);
+    }
+  );
+
+  server.registerTool(
+    "cortex_agent_security",
+    {
+      description: "Security analysis — OWASP mapping, secrets, crypto weaknesses, auth gaps",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+      }),
+    },
+    async ({ root }) => {
+      const dir = resolveRoot(root);
+      const index = loadIndex(dir);
+      if (!index) return text("No index found. Run cortex_init first.");
+      const graph = buildGraph(index.files);
+      const analysis = analyzeDependencies(graph);
+      const result = runAgent("security", { index, analysis, root: dir });
+      return json(result);
+    }
+  );
+
+  server.registerTool(
+    "cortex_agent_tester",
+    {
+      description: "Test strategy — coverage mapping, untested paths, test suggestions",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+      }),
+    },
+    async ({ root }) => {
+      const dir = resolveRoot(root);
+      const index = loadIndex(dir);
+      if (!index) return text("No index found. Run cortex_init first.");
+      const graph = buildGraph(index.files);
+      const analysis = analyzeDependencies(graph);
+      const result = runAgent("tester", { index, analysis, root: dir });
+      return json(result);
+    }
+  );
+
+  server.registerTool(
+    "cortex_agent_all",
+    {
+      description: "Run all agents (architect, reviewer, security, tester) and aggregate results",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+      }),
+    },
+    async ({ root }) => {
+      const dir = resolveRoot(root);
+      const index = loadIndex(dir);
+      if (!index) return text("No index found. Run cortex_init first.");
+      const graph = buildGraph(index.files);
+      const analysis = analyzeDependencies(graph);
+      const memory = loadMemory(dir);
+      const results = runAllAgents({ index, analysis, memory, root: dir });
+      const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
+      return json({ agents: results, combinedScore: avgScore });
     }
   );
 

@@ -1,12 +1,13 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore, ExecutionPlan, PlanTask, PlanPhase, AffectedModule, TaskPriority, ReviewResult, ReviewFinding, ReviewSeverity, ReviewCategory, DiffSummary, DiffHunk } from "./types/index.js";
+import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore, ExecutionPlan, PlanTask, PlanPhase, AffectedModule, TaskPriority, ReviewResult, ReviewFinding, ReviewSeverity, ReviewCategory, DiffSummary, DiffHunk, AgentName, AgentResult, AgentFinding, ArchitecturalReport, SecurityReport, TestReport, CouplingMetrics, OwaspGroup, EndpointInfo, FileCoverage, TestSuggestion } from "./types/index.js";
 import { scanFiles } from "./indexer/index.js";
 import { getParser } from "./parser/index.js";
 import { buildGraph, findEntryPoints, analyzeDependencies, buildContext } from "./graph/index.js";
 import { parseQuery, semanticSearch, buildSemanticIndex } from "./search/index.js";
 import { generatePlan } from "./planner/index.js";
 import { getDiff, getStagedDiff, parseDiff, reviewDiff } from "./review/index.js";
+import { runAgent, runAllAgents, listAgents, getAgent } from "./agents/index.js";
 
 export const CORTEX_DIR = ".cortex";
 export const INDEX_FILE = "index.json";
@@ -34,7 +35,7 @@ export async function initIndex(options: InitOptions): Promise<ProjectIndex> {
   const projectName = root.split("/").pop() ?? root.split("\\").pop() ?? "unknown";
 
   const index: ProjectIndex = {
-    version: "0.6.0",
+    version: "0.7.0",
     project: {
       name: projectName,
       root,
@@ -140,6 +141,7 @@ export { extractSymbols } from "./symbols/index.js";
 export { parseQuery, semanticSearch, buildSemanticIndex } from "./search/index.js";
 export { generatePlan } from "./planner/index.js";
 export { getDiff, getStagedDiff, parseDiff, reviewDiff } from "./review/index.js";
+export { runAgent, runAllAgents, listAgents, getAgent } from "./agents/index.js";
 export {
   loadMemory,
   saveMemory,
@@ -180,4 +182,15 @@ export type {
   ReviewCategory,
   DiffSummary,
   DiffHunk,
+  AgentName,
+  AgentResult,
+  AgentFinding,
+  ArchitecturalReport,
+  SecurityReport,
+  TestReport,
+  CouplingMetrics,
+  OwaspGroup,
+  EndpointInfo,
+  FileCoverage,
+  TestSuggestion,
 } from "./types/index.js";

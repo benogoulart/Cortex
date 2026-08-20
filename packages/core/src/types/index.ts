@@ -216,3 +216,93 @@ export interface ReviewResult {
     info: number;
   };
 }
+
+export type AgentName = "architect" | "reviewer" | "security" | "tester";
+
+export interface AgentFinding {
+  id: string;
+  severity: ReviewSeverity;
+  category: string;
+  file?: string;
+  line?: number;
+  message: string;
+  suggestion?: string;
+}
+
+export interface AgentResult {
+  agent: AgentName;
+  summary: string;
+  findings: AgentFinding[];
+  score: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface LayerInfo {
+  name: string;
+  files: string[];
+  violations: LayerViolation[];
+}
+
+export interface LayerViolation {
+  file: string;
+  line?: number;
+  fromLayer: string;
+  toLayer: string;
+  message: string;
+}
+
+export interface CouplingMetrics {
+  instability: Record<string, number>;
+  afferentCoupling: Record<string, number>;
+  efferentCoupling: Record<string, number>;
+}
+
+export interface ArchitecturalReport extends AgentResult {
+  layers: LayerInfo[];
+  metrics: CouplingMetrics;
+  debtScore: number;
+}
+
+export interface SecurityFinding extends AgentFinding {
+  owaspCategory?: string;
+  entropy?: number;
+}
+
+export interface OwaspGroup {
+  category: string;
+  findings: SecurityFinding[];
+  risk: "low" | "medium" | "high" | "critical";
+}
+
+export interface EndpointInfo {
+  path: string;
+  hasAuth: boolean;
+  sensitivity: "public" | "internal" | "admin";
+}
+
+export interface SecurityReport extends AgentResult {
+  owaspCategories: OwaspGroup[];
+  exposedEndpoints: EndpointInfo[];
+  riskScore: number;
+}
+
+export interface FileCoverage {
+  file: string;
+  totalSymbols: number;
+  testedSymbols: number;
+  coverageRatio: number;
+  untestedSymbols: string[];
+}
+
+export interface TestSuggestion {
+  file: string;
+  symbol: string;
+  kind: SymbolKind;
+  reason: string;
+}
+
+export interface TestReport extends AgentResult {
+  coverage: FileCoverage[];
+  untestedCriticalPaths: string[][];
+  suggestions: TestSuggestion[];
+}
