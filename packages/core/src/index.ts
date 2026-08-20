@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore, ExecutionPlan, PlanTask, PlanPhase, AffectedModule, TaskPriority, ReviewResult, ReviewFinding, ReviewSeverity, ReviewCategory, DiffSummary, DiffHunk, AgentName, AgentResult, AgentFinding, ArchitecturalReport, SecurityReport, TestReport, CouplingMetrics, OwaspGroup, EndpointInfo, FileCoverage, TestSuggestion } from "./types/index.js";
+import type { ProjectIndex, FileEntry, ProjectStats, Language, SearchResult, ContextResult, DependencyAnalysis, MemoryEntry, MemoryCategory, MemoryStore, ExecutionPlan, PlanTask, PlanPhase, AffectedModule, TaskPriority, ReviewResult, ReviewFinding, ReviewSeverity, ReviewCategory, DiffSummary, DiffHunk, AgentName, AgentResult, AgentFinding, ArchitecturalReport, SecurityReport, TestReport, CouplingMetrics, OwaspGroup, EndpointInfo, FileCoverage, TestSuggestion, CortexConfig, UnifiedReport, ReportSnapshot, PlanSnapshot } from "./types/index.js";
 import { scanFiles } from "./indexer/index.js";
 import { getParser } from "./parser/index.js";
 import { buildGraph, findEntryPoints, analyzeDependencies, buildContext } from "./graph/index.js";
@@ -35,7 +35,7 @@ export async function initIndex(options: InitOptions): Promise<ProjectIndex> {
   const projectName = root.split("/").pop() ?? root.split("\\").pop() ?? "unknown";
 
   const index: ProjectIndex = {
-    version: "0.7.0",
+    version: "1.0.0",
     project: {
       name: projectName,
       root,
@@ -155,6 +155,10 @@ export {
   MEMORY_FILE,
   MEMORY_VERSION,
 } from "./memory/index.js";
+export { loadConfig, saveConfig, DEFAULT_CONFIG, CONFIG_FILE } from "./config/index.js";
+export { savePlan, listPlans, getPlan } from "./plan-store/index.js";
+export { saveReportSnapshot, listReportSnapshots, getReportSnapshot } from "./history/index.js";
+export { generateUnifiedReport, createSnapshot } from "./report/index.js";
 export type {
   ProjectIndex,
   FileEntry,
@@ -193,4 +197,8 @@ export type {
   EndpointInfo,
   FileCoverage,
   TestSuggestion,
+  CortexConfig,
+  UnifiedReport,
+  ReportSnapshot,
+  PlanSnapshot,
 } from "./types/index.js";

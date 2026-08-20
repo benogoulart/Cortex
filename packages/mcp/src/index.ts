@@ -24,6 +24,15 @@ import {
   runAgent,
   runAllAgents,
   loadMemory,
+  loadConfig,
+  generateUnifiedReport,
+  createSnapshot,
+  saveReportSnapshot,
+  listReportSnapshots,
+  getReportSnapshot,
+  savePlan,
+  listPlans,
+  getPlan,
 } from "@cortex/core";
 
 function resolveRoot(root?: string): string {
@@ -39,7 +48,7 @@ function json(data: unknown) {
 }
 
 serveStdio(() => {
-  const server = new McpServer({ name: "cortex", version: "0.7.0" });
+  const server = new McpServer({ name: "cortex", version: "1.0.0" });
 
   server.registerTool(
     "cortex_init",
@@ -358,7 +367,8 @@ serveStdio(() => {
       if (!index) return text("No index found. Run cortex_init first.");
       const graph = buildGraph(index.files);
       const analysis = analyzeDependencies(graph);
-      const result = runAgent("security", { index, analysis, root: dir });
+      const memory = loadMemory(dir);
+      const result = runAgent("security", { index, analysis, memory, root: dir });
       return json(result);
     }
   );
@@ -377,7 +387,8 @@ serveStdio(() => {
       if (!index) return text("No index found. Run cortex_init first.");
       const graph = buildGraph(index.files);
       const analysis = analyzeDependencies(graph);
-      const result = runAgent("tester", { index, analysis, root: dir });
+      const memory = loadMemory(dir);
+      const result = runAgent("tester", { index, analysis, memory, root: dir });
       return json(result);
     }
   );
@@ -400,6 +411,63 @@ serveStdio(() => {
       const results = runAllAgents({ index, analysis, memory, root: dir });
       const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
       return json({ agents: results, combinedScore: avgScore });
+    }
+  );
+
+  server.registerTool(
+    "cortex_report",
+    {
+      description: "Run all agents and produce a unified report with cross-agent correlation",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+        save: z.boolean().optional().describe("Save report snapshot to .cortex/history/"),
+      }),
+    },
+    async ({ root, save }) => {
+      const dir = resolveRoot(root);
+      const index = loadIndex(dir);
+      if (!index) return text("No index found. Run cortex_init first.");
+      const graph = buildGraph(index.files);
+      const analysis = analyzeDependencies(graph);
+      const memory = loadMemory(dir);
+      const report = generateUnifiedReport({ index, analysis, memory, root: dir });
+      if (save) {
+        const snapshot = createSnapshot(report);
+        saveReportSnapshot(dir, snapshot);
+      }
+      return json(report);
+    }
+  );
+
+  server.registerTool(
+    "cortex_history",
+    {
+      description: "List past report snapshots and saved plans",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+        type: z.enum(["reports", "plans"]).optional().describe("Filter by type"),
+      }),
+    },
+    async ({ root, type }) => {
+      const dir = resolveRoot(root);
+      const reports = type !== "plans" ? listReportSnapshots(dir) : [];
+      const plans = type !== "reports" ? listPlans(dir) : [];
+      return json({ reports, plans });
+    }
+  );
+
+  server.registerTool(
+    "cortex_config_get",
+    {
+      description: "Read the current Cortex configuration",
+      inputSchema: z.object({
+        root: z.string().optional().describe("Project root directory"),
+      }),
+    },
+    async ({ root }) => {
+      const dir = resolveRoot(root);
+      const config = loadConfig(dir);
+      return json(config);
     }
   );
 

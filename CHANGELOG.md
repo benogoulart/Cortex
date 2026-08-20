@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 
+## [1.0.0](2026-08-20)
+
+### Unified
+
+#### Features
+
+- **core:** add unified report module — runs all agents, correlates findings per-file, produces overall health score with prioritized action list
+- **core:** add configuration system (`.cortex/config.json`) — persists include/ignore patterns, layer definitions, security patterns, search weights, review rules
+- **core:** add plan persistence — save plans to `.cortex/plans/`, list past plans with `listPlans()`
+- **core:** add run history — save report snapshots to `.cortex/history/`, compare trends over time
+- **core:** wire memory into architect agent — architectural conventions from memory now shape analysis
+- **core:** wire memory into security agent — past security decisions inform scan results
+- **core:** wire memory into tester agent — testing conventions from memory inform test suggestions
+- **core:** fix memory passing — security and tester agents now consistently receive memory in all contexts
+- **core:** fix `require()` calls in memory/config modules — replaced with proper ESM imports
+- **core:** new types: `CortexConfig`, `UnifiedReport`, `ReportSnapshot`, `PlanSnapshot`
+
+### CLI
+
+#### Features
+
+- **cli:** add `cortex report` command — runs all agents and shows unified report
+- **cli:** add `cortex report --save` — persists report snapshot to history
+- **cli:** add `cortex history reports` — lists past report snapshots
+- **cli:** add `cortex history plans` — lists saved plans
+- **cli:** add `--json` flag to `cortex status`, `cortex plan`
+- **cli:** add `--save` flag to `cortex plan` — saves plan to `.cortex/plans/`
+- **cli:** fix "LENS STATUS" header → "CORTEX STATUS"
+
+### MCP
+
+#### Features
+
+- **mcp:** add `cortex_report` tool — unified report with optional save
+- **mcp:** add `cortex_history` tool — list report snapshots and plans
+- **mcp:** add `cortex_config_get` tool — read current configuration
+- **mcp:** fix `cortex_agent_security` and `cortex_agent_tester` to pass memory
+
+### Tests
+
+#### Features
+
+- **core:** add graph module tests (12 tests) — buildGraph, findEntryPoints, findDependencies, detectCycles, transitive deps, analyzeDependencies
+- **core:** add search module tests (7 tests) — parseQuery, semanticSearch, symbol matching, limits
+- **core:** add memory module tests (15 tests) — CRUD, category detection, tag extraction, search, list
+- **core:** add planner module tests (4 tests) — plan generation, affected modules, risk factors, unique IDs
+
+### General
+
+#### Refactoring
+
+- bump version to 1.0.0 across all packages
+- remove dead `require()` calls in memory and config modules
+- update CHANGELOG with v1.0.0 entry
+
+
 ## [0.7.0](2026-08-20)
 
 ### Agents

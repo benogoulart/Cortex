@@ -1,6 +1,6 @@
 {
   "name": "@cortex/mcp",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "type": "module",
   "bin": {
     "cortex-mcp": "dist/index.js"

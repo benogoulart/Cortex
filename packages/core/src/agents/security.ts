@@ -211,6 +211,21 @@ export function analyzeSecurity(ctx: AgentContext): SecurityReport {
     });
   }
 
+  if (ctx.memory) {
+    const secDecisions = ctx.memory.entries.filter(
+      (e) => e.category === "decision" && e.tags.some((t) => ["security", "auth", "secret", "token", "password"].includes(t))
+    );
+    for (const entry of secDecisions) {
+      findings.push({
+        id: fid(),
+        severity: "info",
+        category: "convention",
+        message: `Memory: ${entry.text}`,
+        suggestion: "Verify this security decision is still being followed",
+      });
+    }
+  }
+
   const owaspGroups = groupByOwasp(findings);
   const critical = findings.filter((f) => f.severity === "critical").length;
   const warnings = findings.filter((f) => f.severity === "warning").length;

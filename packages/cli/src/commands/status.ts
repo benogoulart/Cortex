@@ -7,6 +7,7 @@ export function statusCommand(program: Command): void {
     .command("status")
     .description("Show index status")
     .option("-r, --root <path>", "Project root", process.cwd())
+    .option("-j, --json", "Output as JSON")
     .action((opts) => {
       const root = resolve(opts.root);
       const index = loadIndex(root);
@@ -16,10 +17,15 @@ export function statusCommand(program: Command): void {
         process.exit(1);
       }
 
+      if (opts.json) {
+        console.log(JSON.stringify(index, null, 2));
+        return;
+      }
+
       const { project } = index;
       const stats = project.stats;
 
-      console.log("\n  LENS STATUS");
+      console.log("\n  CORTEX STATUS");
       console.log("  " + "─".repeat(40));
       console.log(`  Version:    ${index.version}`);
       console.log(`  Project:    ${project.name}`);

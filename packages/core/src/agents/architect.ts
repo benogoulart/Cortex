@@ -117,6 +117,24 @@ function computeDebtScore(
   return Math.min(debt, 100);
 }
 
+function checkMemoryConventions(memory: AgentContext["memory"]): AgentFinding[] {
+  if (!memory) return [];
+  const findings: AgentFinding[] = [];
+  const conventions = memory.entries.filter((e) => e.category === "convention" || e.category === "decision");
+  for (const entry of conventions) {
+    if (entry.tags.some((t) => ["layer", "architecture", "coupling", "module"].includes(t))) {
+      findings.push({
+        id: `arch_mem_${++findingCounter}`,
+        severity: "info",
+        category: "convention",
+        message: `Memory: ${entry.text}`,
+        suggestion: "Check if this architectural decision is still being followed",
+      });
+    }
+  }
+  return findings;
+}
+
 export function analyzeArchitecture(ctx: AgentContext): ArchitecturalReport {
   const findings: AgentFinding[] = [];
   const { index, analysis } = ctx;
@@ -181,6 +199,9 @@ export function analyzeArchitecture(ctx: AgentContext): ArchitecturalReport {
     coupling,
     index.files.length
   );
+
+  const memoryFindings = checkMemoryConventions(ctx.memory);
+  findings.push(...memoryFindings);
 
   const critical = findings.filter((f) => f.severity === "critical").length;
   const warnings = findings.filter((f) => f.severity === "warning").length;

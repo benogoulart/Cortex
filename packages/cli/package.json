@@ -1,6 +1,6 @@
 {
   "name": "@cortex/cli",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "type": "module",
   "bin": {
     "cortex": "dist/index.js"

@@ -9,13 +9,15 @@ import { memoryCommand } from "./commands/memory.js";
 import { planCommand } from "./commands/plan.js";
 import { reviewCommand } from "./commands/review.js";
 import { agentCommand } from "./commands/agent.js";
+import { reportCommand } from "./commands/report.js";
+import { historyCommand } from "./commands/history.js";
 
 const program = new Command();
 
 program
   .name("cortex")
   .description("Developer intelligence for your codebase")
-  .version("0.7.0");
+  .version("1.0.0");
 
 initCommand(program);
 analyzeCommand(program);
@@ -27,5 +29,7 @@ memoryCommand(program);
 planCommand(program);
 reviewCommand(program);
 agentCommand(program);
+reportCommand(program);
+historyCommand(program);
 
 program.parse();
