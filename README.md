@@ -289,6 +289,7 @@ cortex remember "use repository pattern"  # save a convention
 cortex memory search "pattern"            # recall knowledge
 cortex plan "add payment system"          # generate execution plan
 cortex history reports   # view past report snapshots
+cortex setup            # configure MCP for OpenCode
 ```
 
 ## Commands
@@ -311,6 +312,7 @@ cortex history reports   # view past report snapshots
 | `cortex report` | Run all agents and show unified report with cross-agent correlation |
 | `cortex history reports` | List past report snapshots |
 | `cortex history plans` | List saved execution plans |
+| `cortex setup` | Configure MCP server for OpenCode in this project |
 
 ### Options
 
@@ -365,6 +367,70 @@ cortex remember -c mistake "Never use setTimeout for debouncing — use lodash.d
 cortex memory search "database"
 cortex memory search "convention"
 ```
+
+## MCP Setup (OpenCode)
+
+Cortex exposes 21 tools via MCP so coding agents can query your codebase automatically.
+
+### Quick setup
+
+```bash
+cd my-project
+cortex setup    # creates opencode.json with cortex MCP server
+```
+
+### Manual setup
+
+Create `opencode.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "cortex": {
+      "command": "cortex-mcp"
+    }
+  }
+}
+```
+
+Or point directly to the dist:
+
+```json
+{
+  "mcpServers": {
+    "cortex": {
+      "command": "node",
+      "args": ["/path/to/cortex/packages/mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+### Available MCP tools
+
+| Tool | Description |
+|---|---|
+| `cortex_init` | Index the project |
+| `cortex_status` | Show index stats |
+| `cortex_analyze` | Dependency analysis |
+| `cortex_search` | Semantic search |
+| `cortex_context` | Dependency context |
+| `cortex_remember` | Save memory |
+| `cortex_memory_search` | Search memory |
+| `cortex_memory_list` | List memory |
+| `cortex_memory_get` | Get memory entry |
+| `cortex_memory_delete` | Delete memory |
+| `cortex_plan` | Generate execution plan |
+| `cortex_review` | Review git diff |
+| `cortex_dependencies` | File dependencies |
+| `cortex_agent_architect` | Architecture analysis |
+| `cortex_agent_reviewer` | Enhanced code review |
+| `cortex_agent_security` | Security analysis |
+| `cortex_agent_tester` | Test strategy |
+| `cortex_agent_all` | Run all agents |
+| `cortex_report` | Unified report |
+| `cortex_history` | Report/plan history |
+| `cortex_config_get` | Read configuration |
 
 ## Architecture
 

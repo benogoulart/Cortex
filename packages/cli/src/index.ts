@@ -11,6 +11,7 @@ import { reviewCommand } from "./commands/review.js";
 import { agentCommand } from "./commands/agent.js";
 import { reportCommand } from "./commands/report.js";
 import { historyCommand } from "./commands/history.js";
+import { setupCommand } from "./commands/setup.js";
 
 const program = new Command();
 
@@ -31,5 +32,6 @@ reviewCommand(program);
 agentCommand(program);
 reportCommand(program);
 historyCommand(program);
+setupCommand(program);
 
 program.parse();
