@@ -353,7 +353,8 @@ graph TD
     CLI --> |memory| Memory
     CLI --> |plan| Planner
 
-    OpenCode["OpenCode Agent"] --> |MCP future| CLI
+    OpenCode["OpenCode Agent"] --> |MCP| MCP["MCP Server"]
+    MCP --> |tool calls| Core
 ```
 
 **How it works:**
@@ -371,6 +372,10 @@ graph TD
 6. **`cortex memory`** searches and retrieves stored knowledge, enabling agents to recall project context across sessions.
 
 7. **`cortex plan`** takes a task description, analyzes the codebase to find affected modules, assesses risk, and generates a phased execution plan with discovery, architecture, implementation, testing, and security tasks.
+
+8. **`cortex review`** parses `git diff` output and checks for architecture violations, security issues (hardcoded secrets, XSS, SQL injection), missing tests for new functions, complexity increases, and code quality problems.
+
+9. **MCP Server** exposes all Cortex capabilities as MCP tools over stdio. Any MCP-compatible host (OpenCode, Claude Code, VS Code) can connect and invoke tools like `cortex_search`, `cortex_context`, `cortex_review`, etc.
 
 ### Data model
 
@@ -457,20 +462,26 @@ cortex/
 │   │       ├── search/           # Semantic search with weighted scoring
 │   │       ├── memory/           # Persistent project knowledge
 │   │       ├── planner/          # Task planning and risk assessment
+│   │       ├── review/           # Git diff analysis and code review
 │   │       └── index.ts          # Public API
 │   │
-│   └── cli/                      # CLI interface
+│   ├── cli/                      # CLI interface
+│   │   └── src/
+│   │       ├── commands/
+│   │       │   ├── init.ts       # cortex init
+│   │       │   ├── analyze.ts    # cortex analyze
+│   │       │   ├── status.ts     # cortex status
+│   │       │   ├── search.ts     # cortex search
+│   │       │   ├── context.ts    # cortex context
+│   │       │   ├── remember.ts   # cortex remember
+│   │       │   ├── memory.ts     # cortex memory
+│   │       │   ├── plan.ts       # cortex plan
+│   │       │   └── review.ts     # cortex review
+│   │       └── index.ts          # CLI entry point (commander)
+│   │
+│   └── mcp/                      # MCP Server — exposes tools via stdio
 │       └── src/
-│           ├── commands/
-│           │   ├── init.ts       # cortex init
-│           │   ├── analyze.ts    # cortex analyze
-│           │   ├── status.ts     # cortex status
-│           │   ├── search.ts     # cortex search
-│           │   ├── context.ts    # cortex context
-│           │   ├── remember.ts   # cortex remember
-│           │   ├── memory.ts     # cortex memory
-│           │   └── plan.ts       # cortex plan
-│           └── index.ts          # CLI entry point (commander)
+│           └── index.ts          # McpServer with 12 tools
 │
 ├── .gitignore
 ├── package.json                  # Monorepo root
