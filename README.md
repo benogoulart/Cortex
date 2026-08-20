@@ -55,7 +55,7 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 
   Name:       my-project
   Analyzed:   18/08/2026, 22:00:00
-  Version:    0.4.0
+  Version:    1.0.0
 
   STATS
   ────────────────────────────────────────
@@ -205,6 +205,40 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
     [ ] !!! Verify existing tests still pass
 ```
 
+```
+❯ cortex report
+
+  CORTEX REPORT
+  ════════════════════════════════════════════
+  Overall Score: [G] 82/100
+  Files: 142 | Findings: 7 (C:1 W:3 I:3)
+
+  [G] ARCHITECT — 90/100
+  ────────────────────────────────────────
+  Analyzed 142 files across 5 layers. Found 0 cycles, 2 layer violations.
+
+  [Y] REVIEWER — 75/100
+  ────────────────────────────────────────
+  Reviewed 12 changed files. 3 warnings, 1 critical.
+
+  [G] SECURITY — 85/100
+  ────────────────────────────────────────
+  Scanned 142 files. Found 2 security issues (risk: 15/100).
+
+  [Y] TESTER — 78/100
+  ────────────────────────────────────────
+  Test coverage: 45 fully tested, 12 partial, 85 untested.
+
+  TOP ACTIONS
+  ────────────────────────────────────────
+    [X] secret src/config/env.ts:5
+      Hardcoded API key detected
+      → Use environment variables or a secrets manager
+    [!] coverage src/services/payment.ts
+      8 symbols with no test coverage
+      → Add tests for: processPayment, validateCard, refund
+```
+
 ## Features
 
 | Feature | Description |
@@ -250,9 +284,11 @@ cortex init              # scan and create .cortex/index.json
 cortex analyze           # see project insights
 cortex search "auth"     # find relevant code
 cortex context "payment" # get full context for a topic
+cortex report            # unified analysis across all agents
 cortex remember "use repository pattern"  # save a convention
 cortex memory search "pattern"            # recall knowledge
 cortex plan "add payment system"          # generate execution plan
+cortex history reports   # view past report snapshots
 ```
 
 ## Commands
@@ -287,6 +323,8 @@ cortex plan "add payment system"          # generate execution plan
 | `--verbose` | Show score breakdown (search) | — |
 | `-d, --depth <number>` | Transitive dependency depth (context) | `3` |
 | `-c, --category <type>` | Memory category (remember) | auto-detect |
+| `-j, --json` | Output as JSON | — |
+| `--save` | Save plan/report to `.cortex/` | — |
 
 ### Memory Categories
 
@@ -414,7 +452,7 @@ The index stores everything in a single JSON file:
 
 ```json
 {
-  "version": "0.4.0",
+  "version": "1.0.0",
   "project": {
     "name": "my-project",
     "root": "/path/to/project",
@@ -477,6 +515,7 @@ Memory is stored separately:
 | CLI framework | commander |
 | Testing | vitest |
 | Parsing | tree-sitter (TypeScript, JavaScript) |
+| MCP | @modelcontextprotocol/server v2 |
 
 ## Project Structure
 
