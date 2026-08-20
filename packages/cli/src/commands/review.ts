@@ -1,6 +1,6 @@
 import type { Command } from "commander";
 import { loadIndex, getDiff, getStagedDiff, reviewDiff } from "@cortex/core";
-import type { ReviewResult, ReviewSeverity, ReviewCategory } from "@cortex/core";
+import type { ReviewResult, ReviewSeverity, ReviewCategory, ReviewFinding } from "@cortex/core";
 import { resolve } from "node:path";
 
 const SEVERITY_ICONS: Record<ReviewSeverity, string> = {
