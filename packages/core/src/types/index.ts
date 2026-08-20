@@ -171,3 +171,48 @@ export interface ExecutionPlan {
   totalTasks: number;
   estimatedComplexity: number;
 }
+
+export type ReviewSeverity = "critical" | "warning" | "info";
+
+export type ReviewCategory =
+  | "architecture"
+  | "security"
+  | "testing"
+  | "complexity"
+  | "quality";
+
+export interface ReviewFinding {
+  id: string;
+  severity: ReviewSeverity;
+  category: ReviewCategory;
+  file: string;
+  line?: number;
+  message: string;
+  suggestion?: string;
+}
+
+export interface DiffHunk {
+  file: string;
+  additions: number;
+  deletions: number;
+  lines: { type: "add" | "remove" | "context"; content: string; lineNum: number }[];
+}
+
+export interface DiffSummary {
+  files: { file: string; additions: number; deletions: number; status: "added" | "modified" | "deleted" | "renamed" }[];
+  totalAdditions: number;
+  totalDeletions: number;
+}
+
+export interface ReviewResult {
+  summary: DiffSummary;
+  findings: ReviewFinding[];
+  score: number;
+  stats: {
+    filesChanged: number;
+    totalFindings: number;
+    critical: number;
+    warnings: number;
+    info: number;
+  };
+}
