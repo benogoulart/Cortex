@@ -33,7 +33,8 @@ Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 - bump version to 0.4.0 across all packages
 - update README with plan command preview and examples
-- update project structure with planner module
+- update architecture diagram with planner module
+- update project structure with planner directory
 - update features table with task planner
 
 
@@ -50,6 +51,23 @@ Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 - **core:** list, show, delete memory entries
 - **cli:** add `cortex remember <text>` command with `--category` and `--context` flags
 - **cli:** add `cortex memory` command group (search, list, show, delete)
+
+### Types
+
+#### Features
+
+- add `MemoryEntry`, `MemoryCategory`, `MemoryStore` types
+
+### General
+
+#### Refactoring
+
+- bump version to 0.3.0 across all packages
+- update README with memory commands and examples
+- update project structure with memory directory
+
+
+## [0.2.0](2026-08-19)
 
 ### Context Engine
 
@@ -83,58 +101,12 @@ Format: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 - add `ContextResult` type with dependencies, dependents, transitive deps, impact score
 - add `DependencyAnalysis` type with cycles, transitive deps, impact scores, critical path
 - add `SemanticQuery` type for weighted search configuration
-- add `MemoryEntry`, `MemoryCategory`, `MemoryStore` types
 
 ### General
 
 #### Refactoring
 
-- bump version to 0.3.0 across all packages
-- update README with v0.2 completed features and v0.3 memory commands
-- update architecture diagram with search and memory modules
+- bump version to 0.2.0 across all packages
+- update README with v0.2 features and architecture
 - update tech stack table (tree-sitter replaces regex)
-- update project structure with memory and search directories
-- update data model documentation with memory schema
-
-
-## [0.2.0](2026-08-18)
-
-### README
-
-#### Documentation
-
-- updates README.md
-
-
-### CHANGELOG
-
-#### Documentation
-
-- adds CHANGELOG.md
-
-
-### Logo
-
-#### Features
-
-- adds logo.png
-
-
-### General
-
-#### Refactoring
-
-- adjusts layout
-
-
-### Contributors
-
-Thank you to 1 community contributor:
-
-@benogoulart
-- refactor: adjusts layout
-- docs(README): updates README.md
-- docs(CHANGELOG): adds CHANGELOG.md
-- feat(logo): adds logo.png
-
-**Contributors:** @benogoulart
+- update data model documentation with symbol signatures

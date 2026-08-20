@@ -55,7 +55,7 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 
   Name:       my-project
   Analyzed:   18/08/2026, 22:00:00
-  Version:    0.2.0
+  Version:    0.4.0
 
   STATS
   ────────────────────────────────────────
@@ -331,6 +331,7 @@ graph TD
         Graph["graph — dependency mapping"]
         Search["search — semantic scoring"]
         Memory["memory — project knowledge"]
+        Planner["planner — task planning"]
     end
 
     Indexer --> |fast-glob| Files[("Codebase")]
@@ -342,6 +343,7 @@ graph TD
     Graph --> Index
     Search --> |weighted scoring| Results["Search Results"]
     Memory --> |persistent| MemoryStore[(".cortex/memory.json")]
+    Planner --> |risk + phases| Plans["Execution Plans"]
 
     CLI --> |init| Indexer
     CLI --> |analyze| Index
@@ -349,6 +351,7 @@ graph TD
     CLI --> |context| Graph
     CLI --> |remember| Memory
     CLI --> |memory| Memory
+    CLI --> |plan| Planner
 
     OpenCode["OpenCode Agent"] --> |MCP future| CLI
 ```
@@ -367,13 +370,15 @@ graph TD
 
 6. **`cortex memory`** searches and retrieves stored knowledge, enabling agents to recall project context across sessions.
 
+7. **`cortex plan`** takes a task description, analyzes the codebase to find affected modules, assesses risk, and generates a phased execution plan with discovery, architecture, implementation, testing, and security tasks.
+
 ### Data model
 
 The index stores everything in a single JSON file:
 
 ```json
 {
-  "version": "0.2.0",
+  "version": "0.4.0",
   "project": {
     "name": "my-project",
     "root": "/path/to/project",
