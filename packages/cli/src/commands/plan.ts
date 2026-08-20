@@ -1,5 +1,5 @@
 import type { Command } from "commander";
-import { loadIndex, generatePlan } from "@cortex/core";
+import { loadIndex, generatePlan, savePlan } from "@cortex/core";
 import type { ExecutionPlan, PlanPhase } from "@cortex/core";
 import { resolve } from "node:path";
 
@@ -31,6 +31,8 @@ export function planCommand(program: Command): void {
     .command("plan <description>")
     .description("Generate a structured execution plan from a task description")
     .option("-r, --root <path>", "Project root", process.cwd())
+    .option("-j, --json", "Output as JSON")
+    .option("--save", "Save plan to .cortex/plans/")
     .action((description: string, opts) => {
       const root = resolve(opts.root);
       const index = loadIndex(root);
@@ -42,7 +44,15 @@ export function planCommand(program: Command): void {
 
       const plan = generatePlan(index, description);
 
-      printPlan(plan);
+      if (opts.save) {
+        savePlan(root, plan);
+      }
+
+      if (opts.json) {
+        console.log(JSON.stringify(plan, null, 2));
+      } else {
+        printPlan(plan);
+      }
     });
 }
 

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import type { MemoryEntry, MemoryCategory, MemoryStore } from "../types/index.js";
 
@@ -67,7 +67,6 @@ export function loadMemory(root: string): MemoryStore {
 export function saveMemory(root: string, store: MemoryStore): void {
   const cortexDir = join(root, ".cortex");
   if (!existsSync(cortexDir)) {
-    const { mkdirSync } = require("node:fs");
     mkdirSync(cortexDir, { recursive: true });
   }
 

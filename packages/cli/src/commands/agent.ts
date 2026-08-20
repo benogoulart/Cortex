@@ -168,7 +168,8 @@ export function agentCommand(program: Command): void {
       }
       const graph = buildGraph(index.files);
       const analysis = analyzeDependencies(graph);
-      const result = runAgent("security", { index, analysis, root });
+      const memory = loadMemory(root);
+      const result = runAgent("security", { index, analysis, memory, root });
       if (opts.json) {
         console.log(JSON.stringify(result, null, 2));
       } else {
@@ -188,7 +189,8 @@ export function agentCommand(program: Command): void {
       }
       const graph = buildGraph(index.files);
       const analysis = analyzeDependencies(graph);
-      const result = runAgent("tester", { index, analysis, root });
+      const memory = loadMemory(root);
+      const result = runAgent("tester", { index, analysis, memory, root });
       if (opts.json) {
         console.log(JSON.stringify(result, null, 2));
       } else {

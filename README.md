@@ -219,10 +219,15 @@ cortex indexes your codebase into a structured knowledge graph — files, symbol
 | **Dependency analysis** | Cycle detection, transitive deps, critical path, impact scoring |
 | **Project memory** | Persistent decisions, conventions, patterns and mistakes per project |
 | **Task planner** | Transform vague tasks into structured execution plans with risk assessment |
+| **Unified report** | Cross-agent correlation, per-file findings, prioritized actions, overall health score |
+| **Configuration** | Persist include/ignore, layer definitions, security patterns, search weights in `.cortex/config.json` |
+| **Plan persistence** | Save and retrieve execution plans over time |
+| **Run history** | Track report snapshots and compare health trends |
 | **Multi-language** | TypeScript, JavaScript (ESM + CJS), JSON — extensible to more |
 | **Fast** | Indexes thousands of files in seconds with tree-sitter |
 | **Zero config** | Works out of the box — just `cortex init` in any project |
 | **Agent-ready** | Structured output designed for MCP integration with OpenCode |
+| **Tested** | 38 tests across graph, search, memory, and planner modules |
 
 ## Quick Start
 
@@ -265,6 +270,11 @@ cortex plan "add payment system"          # generate execution plan
 | `cortex memory show <id>` | Show a specific memory entry |
 | `cortex memory delete <id>` | Delete a memory entry |
 | `cortex plan <description>` | Generate a structured execution plan from a task description |
+| `cortex review` | Review git diff for architecture, security and test issues |
+| `cortex agent <name>` | Run a specialized analysis agent (architect, reviewer, security, tester, all) |
+| `cortex report` | Run all agents and show unified report with cross-agent correlation |
+| `cortex history reports` | List past report snapshots |
+| `cortex history plans` | List saved execution plans |
 
 ### Options
 
@@ -332,6 +342,10 @@ graph TD
         Search["search — semantic scoring"]
         Memory["memory — project knowledge"]
         Planner["planner — task planning"]
+        Report["report — unified analysis"]
+        Config["config — project settings"]
+        PlanStore["plan-store — saved plans"]
+        History["history — run snapshots"]
     end
 
     Indexer --> |fast-glob| Files[("Codebase")]
@@ -344,6 +358,10 @@ graph TD
     Search --> |weighted scoring| Results["Search Results"]
     Memory --> |persistent| MemoryStore[(".cortex/memory.json")]
     Planner --> |risk + phases| Plans["Execution Plans"]
+    Report --> |all agents| UnifiedReport["Unified Report"]
+    Config --> |settings| ConfigStore[(".cortex/config.json")]
+    PlanStore --> |save/load| Plans
+    History --> |snapshots| RunHistory[(".cortex/history/")]
 
     CLI --> |init| Indexer
     CLI --> |analyze| Index
@@ -352,6 +370,8 @@ graph TD
     CLI --> |remember| Memory
     CLI --> |memory| Memory
     CLI --> |plan| Planner
+    CLI --> |report| Report
+    CLI --> |history| History
 
     OpenCode["OpenCode Agent"] --> |MCP| MCP["MCP Server"]
     MCP --> |tool calls| Core
@@ -383,6 +403,10 @@ graph TD
 9. **MCP Server** exposes all Cortex capabilities as MCP tools over stdio. Any MCP-compatible host (OpenCode, Claude Code, VS Code) can connect and invoke tools like `cortex_search`, `cortex_context`, `cortex_review`, etc.
 
 10. **Agents** are specialized deep-analysis modules. The **architect** agent detects layer violations and coupling issues. The **reviewer** agent performs graph-aware, convention-aware code review. The **security** agent runs full-file scans with OWASP mapping. The **tester** agent maps test coverage and suggests missing tests. Each agent is available via CLI (`cortex agent <name>`), MCP, or as a core library function.
+
+11. **Unified Report** (`cortex report`) runs all agents, correlates findings across agents, groups them per-file, and produces a single health score with a prioritized action list. Reports can be saved to `.cortex/history/` for trend tracking over time.
+
+12. **Configuration** (`.cortex/config.json`) persists project settings — file patterns, layer definitions, custom security patterns, search weights, and review rules — across sessions.
 
 ### Data model
 
@@ -476,7 +500,10 @@ cortex/
 │   │       │   ├── security.ts   # Security analysis
 │   │       │   ├── tester.ts     # Test strategy
 │   │       │   └── index.ts      # Agent registry
-│   │       └── index.ts          # Public API
+│   │       ├── report/           # Unified cross-agent report
+│   │       ├── config/           # Project configuration (.cortex/config.json)
+│   │       ├── plan-store/       # Plan persistence
+│   │       └── history/          # Report snapshots and trends
 │   │
 │   ├── cli/                      # CLI interface
 │   │   └── src/
@@ -490,12 +517,14 @@ cortex/
 │   │       │   ├── memory.ts     # cortex memory
 │   │       │   ├── plan.ts       # cortex plan
 │   │       │   ├── review.ts     # cortex review
-│   │       │   └── agent.ts      # cortex agent <name>
+│   │       │   ├── agent.ts      # cortex agent <name>
+│   │       │   ├── report.ts     # cortex report
+│   │       │   └── history.ts    # cortex history
 │   │       └── index.ts          # CLI entry point (commander)
 │   │
 │   └── mcp/                      # MCP Server — exposes tools via stdio
 │       └── src/
-│           └── index.ts          # McpServer with 18 tools
+│           └── index.ts          # McpServer with 21 tools
 │
 ├── .gitignore
 ├── package.json                  # Monorepo root

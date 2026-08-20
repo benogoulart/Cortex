@@ -306,3 +306,51 @@ export interface TestReport extends AgentResult {
   untestedCriticalPaths: string[][];
   suggestions: TestSuggestion[];
 }
+
+export interface CortexConfig {
+  include: string[];
+  ignore: string[];
+  layers: Record<string, string[]>;
+  securityPatterns: { pattern: string; type: string; owasp: string }[];
+  searchWeights: {
+    path: number;
+    symbol: number;
+    import: number;
+    export: number;
+    structural: number;
+  };
+  reviewRules: { pattern: string; message: string; severity: ReviewSeverity }[];
+}
+
+export interface UnifiedReport {
+  id: string;
+  timestamp: string;
+  overallScore: number;
+  agents: AgentResult[];
+  perFile: Record<string, AgentFinding[]>;
+  prioritizedActions: AgentFinding[];
+  metadata: {
+    filesAnalyzed: number;
+    totalFindings: number;
+    critical: number;
+    warnings: number;
+    info: number;
+  };
+}
+
+export interface ReportSnapshot {
+  id: string;
+  timestamp: string;
+  report: UnifiedReport;
+}
+
+export interface PlanSnapshot {
+  id: string;
+  planId: string;
+  title: string;
+  taskDescription: string;
+  createdAt: string;
+  risk: "low" | "medium" | "high" | "critical";
+  totalTasks: number;
+  estimatedComplexity: number;
+}

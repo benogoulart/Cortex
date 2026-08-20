@@ -178,6 +178,21 @@ export function analyzeTests(ctx: AgentContext): TestReport {
     }
   }
 
+  if (ctx.memory) {
+    const testConventions = ctx.memory.entries.filter(
+      (e) => e.tags.some((t) => ["test", "testing", "coverage", "spec"].includes(t))
+    );
+    for (const entry of testConventions) {
+      findings.push({
+        id: fid(),
+        severity: "info",
+        category: "convention",
+        message: `Memory: ${entry.text}`,
+        suggestion: "Check if this testing convention is being followed",
+      });
+    }
+  }
+
   const score = computeTestQualityScore(coverage);
 
   return {
