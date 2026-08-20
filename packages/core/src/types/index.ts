@@ -89,8 +89,8 @@ export interface ContextResult {
 
 export interface DependencyAnalysis {
   cycles: string[][];
-  transitiveDeps: Map<string, string[]>;
-  impactScores: Map<string, number>;
+  transitiveDeps: Record<string, string[]>;
+  impactScores: Record<string, number>;
   criticalPath: string[];
 }
 

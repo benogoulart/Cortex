@@ -7,7 +7,7 @@ function makeIndex(
 ): ProjectIndex {
   return {
     version: "1.0.0",
-    project: { name: "test", root: "/test", analyzedAt: new Date().toISOString(), stats: { totalFiles: files.length, totalLines: 1000, typescript: files.length, javascript: 0, json: 0 } },
+    project: { name: "test", root: "/test", analyzedAt: new Date().toISOString(), stats: { totalFiles: files.length, totalLines: 1000, languages: { typescript: files.length, javascript: 0, json: 0, unknown: 0 } } },
     files: files.map((f) => ({
       path: `/test/${f.relativePath}`,
       relativePath: f.relativePath,

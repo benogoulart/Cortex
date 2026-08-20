@@ -196,21 +196,20 @@ export function detectCycles(graph: DependencyGraph): string[][] {
   return cycles;
 }
 
-export function computeImpactScores(graph: DependencyGraph): Map<string, number> {
-  const scores = new Map<string, number>();
+export function computeImpactScores(graph: DependencyGraph): Record<string, number> {
+  const scores: Record<string, number> = {};
 
   for (const [node] of graph.adjacency) {
     const dependents = findTransitiveDependents(graph, node);
-    scores.set(node, dependents.length);
+    scores[node] = dependents.length;
   }
 
   for (const [node] of graph.reverseAdjacency) {
-    if (!scores.has(node)) {
-      scores.set(node, 0);
+    if (scores[node] === undefined) {
+      scores[node] = 0;
     }
     const deps = findTransitiveDependencies(graph, node);
-    const currentScore = scores.get(node) ?? 0;
-    scores.set(node, currentScore + deps.length * 0.5);
+    scores[node] += deps.length * 0.5;
   }
 
   return scores;
@@ -229,7 +228,7 @@ export function computeCriticalPath(graph: DependencyGraph): string[] {
     const transitiveDeps = findTransitiveDependencies(graph, ep);
     let score = 0;
     for (const dep of transitiveDeps) {
-      score += scores.get(dep) ?? 0;
+      score += scores[dep] ?? 0;
     }
 
     if (score > bestScore) {
@@ -246,9 +245,9 @@ export function analyzeDependencies(graph: DependencyGraph): DependencyAnalysis 
   const impactScores = computeImpactScores(graph);
   const criticalPath = computeCriticalPath(graph);
 
-  const transitiveDeps = new Map<string, string[]>();
+  const transitiveDeps: Record<string, string[]> = {};
   for (const [node] of graph.adjacency) {
-    transitiveDeps.set(node, findTransitiveDependencies(graph, node));
+    transitiveDeps[node] = findTransitiveDependencies(graph, node);
   }
 
   return {
@@ -274,7 +273,7 @@ export function buildContext(
 
     const transitiveDeps = findTransitiveDependencies(graph, file.relativePath, maxDepth);
 
-    const impactScore = impactScores.get(file.relativePath) ?? 0;
+    const impactScore = impactScores[file.relativePath] ?? 0;
 
     results.push({
       file: file.relativePath,

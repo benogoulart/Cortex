@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import type {
   ProjectIndex,
   ReviewResult,
@@ -13,7 +13,7 @@ import type {
 export function getDiff(root: string, target?: string): string {
   const ref = target ?? "HEAD";
   try {
-    return execSync(`git diff ${ref}`, {
+    return execFileSync("git", ["diff", ref], {
       cwd: root,
       encoding: "utf-8",
       maxBuffer: 10 * 1024 * 1024,
@@ -25,7 +25,7 @@ export function getDiff(root: string, target?: string): string {
 
 export function getStagedDiff(root: string): string {
   try {
-    return execSync("git diff --cached", {
+    return execFileSync("git", ["diff", "--cached"], {
       cwd: root,
       encoding: "utf-8",
       maxBuffer: 10 * 1024 * 1024,
